@@ -15,7 +15,7 @@ try:
     from rich.layout import Layout
 except ImportError:
     print("Installing rich...")
-    os.system("pip install rich")
+    os.system("uv add rich")
     from rich.console import Console
     from rich.table import Table
     from rich.live import Live
