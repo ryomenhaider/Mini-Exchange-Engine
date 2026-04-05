@@ -3,44 +3,37 @@ import time
 import uuid
 from orderbook import OrderBook
 
+
 class Simulator:
     def __init__(self, mid_price: float = 100.0):
-        # create an OrderBook instance
-        # store mid_price as starting reference price
-        # seed the book by calling _seed_book()
-        
         self.orderbook = OrderBook()
         self.mid_price = mid_price
+        self.spoof_order_ids = []
+        self.spoof_active = False
+        self.last_spoof_reason = ""
         self._seed_book()
-        
 
     def _seed_book(self):
-        # place ~10 realistic bid orders below mid_price
-        # place ~10 realistic ask orders above mid_price
-        # prices should be random but close to mid_price (within 2%)
-        # volumes should be random floats between 0.5 and 5.0
-        # use uuid.uuid4().hex as order_id for each
         for _ in range(10):
-            
             bid_price = self.mid_price * (1 - random.uniform(0.001, 0.02))
-            bid_vol   = random.uniform(0.5,5.0)
+            bid_vol = random.uniform(0.5, 5.0)
 
             self.orderbook.add_order(
                 order_id=uuid.uuid4().hex,
-                side='bid',
+                side="bid",
                 price=round(bid_price, 2),
-                volume=round(bid_vol, 2)
-            ) 
-            ask_price = self.mid_price * (1 - random.uniform(0.001, 0.02))
-            ask_vol   = random.uniform(0.5,5.0)
+                volume=round(bid_vol, 2),
+            )
+
+            ask_price = self.mid_price * (1 + random.uniform(0.001, 0.02))
+            ask_vol = random.uniform(0.5, 5.0)
 
             self.orderbook.add_order(
                 order_id=uuid.uuid4().hex,
-                side='ask',
+                side="ask",
                 price=round(ask_price, 2),
-                volume=round(ask_vol, 2)
-            ) 
-
+                volume=round(ask_vol, 2),
+            )
 
     def tick(self):
         action = random.choice(["add", "cancel", "trade"])
@@ -60,7 +53,7 @@ class Simulator:
                 order_id=uuid.uuid4().hex,
                 side=side,
                 price=round(price, 2),
-                volume=round(volume, 2)
+                volume=round(volume, 2),
             )
 
         elif action == "cancel":
@@ -90,26 +83,36 @@ class Simulator:
         if new_mid is not None:
             self.mid_price = new_mid
 
-
-
     def inject_spoof(self, side: str, price: float, volume: float):
-        # place a large order (volume should be 10-20x normal)
-        # store its order_id in spoof_order_ids
-        # return the order_id
-        large_order = {
-            spoof_vol = volume * (random.uniform(10, 20)),
-
-        }
+        order_id = uuid.uuid4().hex
+        self.orderbook.add_order(
+            order_id=order_id, side=side, price=round(price, 2), volume=round(volume, 2)
+        )
+        self.spoof_order_ids.append(order_id)
+        self.spoof_active = True
+        return order_id
 
     def cancel_spoof(self):
-        # cancel all orders in spoof_order_ids
-        # clear the list after
-        pass
+        for order_id in self.spoof_order_ids[:]:
+            self.orderbook.cancel_order(order_id)
+            self.spoof_order_ids.remove(order_id)
+        self.spoof_active = False
 
     def _execute_trade(self):
-        # pick best bid or best ask randomly
-        # reduce its volume by a small random amount (0.1 to 1.0)
-        # if volume hits 0, remove that price level
-        # hint: you'll need to find the order_id for that price level
-        #       look through self.ob.orders to find it
-        pass
+        side = random.choice(["bid", "ask"])
+
+        if side == "bid":
+            price = self.orderbook.best_bid()
+            book = self.orderbook.bids
+        else:
+            price = self.orderbook.best_ask()
+            book = self.orderbook.asks
+
+        if price is None or price not in book:
+            return
+
+        trade_volume = random.uniform(0.1, 1.0)
+        book[price] -= trade_volume
+
+        if book[price] <= 0:
+            del book[price]

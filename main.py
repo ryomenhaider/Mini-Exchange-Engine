@@ -91,7 +91,7 @@ class OrderBookUI:
         return info
 
     def render_orderbook(self):
-        
+
         bids = sorted(self.sim.orderbook.bids.items(), key=lambda x: -x[0])
         asks = list(self.sim.orderbook.asks.items())
 
@@ -182,7 +182,7 @@ class OrderBookUI:
             console.print("Watch how price moves toward spoof, then spoof vanishes!")
 
     def inject_spoof_buy(self):
-        
+
         if self.spoof_injected:
             return
 
@@ -201,8 +201,7 @@ class OrderBookUI:
             )
 
     def inject_spoof_sell(self):
-    
-    if self.spoof_injected:
+        if self.spoof_injected:
             return
 
         best_bid = self.sim.orderbook.best_bid()
@@ -220,8 +219,7 @@ class OrderBookUI:
             )
 
     def cancel_spoof(self):
-
-    if not self.spoof_injected:
+        if not self.spoof_injected:
             return
 
         self.sim.cancel_spoof()
@@ -248,7 +246,7 @@ class OrderBookUI:
             self.sim.tick()
 
     def run(self):
-        
+
         self.console.print("[bold green]Order Book Spoof Simulator[/bold green]")
         self.console.print("Watch how spoof walls manipulate price, then disappear!\n")
 
