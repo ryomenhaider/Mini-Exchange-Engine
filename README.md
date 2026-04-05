@@ -5,7 +5,7 @@ A live terminal-based order book simulator that demonstrates how spoof trading w
 ## Requirements
 
 ```bash
-pip install rich sortedcontainers
+uv add rich sortedcontainers
 ```
 
 ## Run

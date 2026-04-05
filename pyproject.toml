@@ -7,6 +7,7 @@ requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.135.3",
     "psycopg2-binary>=2.9.11",
+    "rich>=14.3.3",
     "sortedcontainers>=2.4.0",
     "sqlalchemy>=2.0.49",
     "uvicorn>=0.43.0",

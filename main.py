@@ -90,33 +90,8 @@ class OrderBookUI:
 
         return info
 
-    def get_detection_explanation(self):
-        """Explain why spoof detection works"""
-        lines = []
-        lines.append("=" * 50)
-        lines.append("WHY SPOOF DETECTION WORKS")
-        lines.append("=" * 50)
-        lines.append("")
-        lines.append("1. VOLUME ANOMALY")
-        lines.append("   Spoof orders are 10-20x larger than normal")
-        lines.append("   Normal volume: 0.5-5.0 | Spoof: 50-100+")
-        lines.append("")
-        lines.append("2. PRICE IMMOBILE")
-        lines.append("   Spoof never executes - it's fake!")
-        lines.append("   Watch: price approaches then retreats")
-        lines.append("")
-        lines.append("3. TEMPORAL PATTERN")
-        lines.append("   Spoof appears -> price moves -> spoof vanishes")
-        lines.append("   Typical lifespan: 2-10 seconds")
-        lines.append("")
-        lines.append("4. LAYERING EFFECT")
-        lines.append("   Spoof creates wall to push price direction")
-        lines.append("   Then cancels when price moves away")
-        lines.append("=" * 50)
-        return "\n".join(lines)
-
     def render_orderbook(self):
-        """Render the current order book state"""
+        
         bids = sorted(self.sim.orderbook.bids.items(), key=lambda x: -x[0])
         asks = list(self.sim.orderbook.asks.items())
 
@@ -207,7 +182,7 @@ class OrderBookUI:
             console.print("Watch how price moves toward spoof, then spoof vanishes!")
 
     def inject_spoof_buy(self):
-        """Inject a large buy order (spoof)"""
+        
         if self.spoof_injected:
             return
 
@@ -226,8 +201,8 @@ class OrderBookUI:
             )
 
     def inject_spoof_sell(self):
-        """Inject a large sell order (spoof)"""
-        if self.spoof_injected:
+    
+    if self.spoof_injected:
             return
 
         best_bid = self.sim.orderbook.best_bid()
@@ -245,8 +220,8 @@ class OrderBookUI:
             )
 
     def cancel_spoof(self):
-        """Cancel the spoof order"""
-        if not self.spoof_injected:
+
+    if not self.spoof_injected:
             return
 
         self.sim.cancel_spoof()
@@ -273,7 +248,7 @@ class OrderBookUI:
             self.sim.tick()
 
     def run(self):
-        """Main loop with keyboard input"""
+        
         self.console.print("[bold green]Order Book Spoof Simulator[/bold green]")
         self.console.print("Watch how spoof walls manipulate price, then disappear!\n")
 
